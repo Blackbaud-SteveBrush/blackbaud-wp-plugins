@@ -1,0 +1,206 @@
+<div class="blackbaud-luminate-survey">
+
+    <h2>{{ surveyName }}</h2>
+
+    {{#if confirmation}}
+        {{{ confirmation }}}
+
+    {{else}}
+
+        {{#if surveyIntroduction }}
+            <p>{{ surveyIntroduction }}</p>
+        {{/if}}
+
+        <form
+            class="form-horizontal luminateApi survey-form"
+            method="POST"
+            action="{{ settings.path.nonsecure }}CRSurveyAPI"
+            data-luminateApi='{"callback": "submitSurveyCallback", "requiresAuth": "true"}'>
+
+
+            {{#is settings.consId "===" "0" }}
+                <div class="alert alert-info">
+                    Have a Luminate Online account? <a href="">Log in.</a>
+                </div>
+            {{/is}}
+
+
+            <input type="hidden" name="method" value="submitSurvey">
+            <input type="hidden" name="survey_id" value="{{ surveyId }}">
+
+
+            {{#if hasErrors }}
+                <div class="alert alert-danger">
+                    <strong>An error occurred.</strong><br>Please correct the field entries below.
+                </div>
+            {{/if}}
+
+
+            <div class="form-group form-required-summary">
+                <div class="col-sm-9 col-sm-push-3">
+                    <span class="text-danger form-required-marker">*</span> = required field
+                </div>
+            </div>
+
+
+            {{#each surveyQuestions}}
+
+                {{#is questionType "===" "ShortTextValue" }}
+                    <div class="form-group{{#if error }} has-error{{/if}}">
+                        <label class="col-sm-3 control-label" for="short-text-{{ @index }}">{{ questionText }}{{#is questionRequired "===" "true" }}<span class="text-danger form-required-marker">*</span>{{/is}}</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="question_{{ questionId }}" name="question_{{ questionId }}" maxlength="40" value="{{ value }}">
+                            {{#if error }}
+                                <div class="help-block">{{ error }}</div>
+                            {{/if}}
+                        </div>
+                    </div>
+                {{/is}}
+
+                {{#is questionType "===" "TextValue" }}
+                    <div class="form-group{{#if error }} has-error{{/if}}">
+                        <label class="col-sm-3 control-label" for="short-text-{{ @index }}">{{ questionText }}{{#is questionRequired "===" "true" }}<span class="text-danger form-required-marker">*</span>{{/is}}</label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control" id="question_{{ questionId }}" name="question_{{ questionId }}" maxlength="255">{{ value }}</textarea>
+                            {{#if questionHint }}
+                                <div class="help-block">{{ questionHint }}</div>
+                            {{/if}}
+                            {{#if error }}
+                                <div class="help-block">{{ error }}</div>
+                            {{/if}}
+                        </div>
+                    </div>
+                {{/is}}
+
+                {{#is questionType "===" "YesNo" }}
+                    <div class="form-group{{#if error }} has-error{{/if}}">
+                        <label class="col-sm-3 control-label" for="short-text-{{ @index }}">{{ questionText }}{{#is questionRequired "===" "true" }}<span class="text-danger form-required-marker">*</span>{{/is}}</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" id="question_{{ questionId }}" name="question_{{ questionId }}">
+                                <option value="NOREPLY">Please select...</option>
+                                {{#each questionTypeData.surveyQuestionData.availableAnswer }}
+                                    <option value="{{ value }}"{{#is ../value "===" value}} checked{{/is}}>{{ label }}</option>
+                                {{/each}}
+                            </select>
+                            {{#if error }}
+                                <div class="help-block">{{ error }}</div>
+                            {{/if}}
+                        </div>
+                    </div>
+                {{/is}}
+
+                {{#is questionType "===" "TrueFalse" }}
+                    <div class="form-group{{#if error }} has-error{{/if}}">
+                        <label class="col-sm-3 control-label" for="short-text-{{ @index }}">{{ questionText }}{{#is questionRequired "===" "true" }}<span class="text-danger form-required-marker">*</span>{{/is}}</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" id="question_{{ questionId }}" name="question_{{ questionId }}">
+                                <option value="NOREPLY">Please select...</option>
+                                {{#each questionTypeData.surveyQuestionData.availableAnswer }}
+                                    <option value="{{ value }}"{{#is ../value "===" value}} checked{{/is}}>{{ label }}</option>
+                                {{/each}}
+                            </select>
+                            {{#if error }}
+                                <div class="help-block">{{ error }}</div>
+                            {{/if}}
+                        </div>
+                    </div>
+                {{/is}}
+
+                {{#is questionType "===" "MultiSingle" }}
+                    <div class="form-group{{#if error }} has-error{{/if}}">
+                        <label class="col-sm-3 control-label" for="short-text-{{ @index }}">{{ questionText }}{{#is questionRequired "===" "true" }}<span class="text-danger form-required-marker">*</span>{{/is}}</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" id="question_{{ questionId }}" name="question_{{ questionId }}">
+                                <option value="NOREPLY">Please select...</option>
+                                {{#each questionTypeData.surveyQuestionData.availableAnswer }}
+                                    <option value="{{ value }}"{{#is ../value "===" value}} checked{{/is}}>{{ label }}</option>
+                                {{/each}}
+                            </select>
+                            {{#if error }}
+                                <div class="help-block">{{ error }}</div>
+                            {{/if}}
+                        </div>
+                    </div>
+                {{/is}}
+
+                {{#is questionType "===" "MultiSingleRadio" }}
+                    <div class="form-group{{#if error }} has-error{{/if}}">
+                        <label class="col-sm-3 control-label" for="short-text-{{ @index }}">{{ questionText }}{{#is questionRequired "===" "true" }}<span class="text-danger form-required-marker">*</span>{{/is}}</label>
+                        <div class="col-sm-9" id="question_{{ questionId }}">
+                            {{#each questionTypeData.surveyQuestionData.availableAnswer }}
+                                <div class="radio">
+                                    <label><input type="radio" name="question_{{ ../questionId }}" value="{{ value }}"{{#is ../value "===" value}} checked{{/is}}>{{ label }}</label>
+                                </div>
+                            {{/each}}
+                            {{#if error }}
+                                <div class="help-block">{{ error }}</div>
+                            {{/if}}
+                        </div>
+                    </div>
+                {{/is}}
+
+                {{#is questionType "===" "ConsQuestion" }}
+                    {{#each questionTypeData.consRegInfoData.contactInfoField }}
+
+                        {{#is fieldName "===" "cons_first_name" }}
+                            <div class="form-group{{#if error }} has-error{{/if}}">
+                                <label class="col-sm-3 control-label" for="cons-{{ fieldName }}">First Name:{{#is fieldStatus "===" "REQUIRED" }}<span class="text-danger form-required-marker">*</span>{{/is}}</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="cons-{{ fieldName }}" name="{{ fieldName }}" value="{{ value }}" maxlength="50">
+                                    {{#if error }}
+                                        <div class="help-block">{{ error }}</div>
+                                    {{/if}}
+                                </div>
+                            </div>
+                        {{/is}}
+
+                        {{#is fieldName "===" "cons_last_name" }}
+                            <div class="form-group{{#if error }} has-error{{/if}}">
+                                <label class="col-sm-3 control-label" for="cons-{{ fieldName }}">Last Name:{{#is fieldStatus "===" "REQUIRED" }}<span class="text-danger form-required-marker">*</span>{{/is}}</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="cons-{{ fieldName }}" name="{{ fieldName }}" value="{{ value }}" maxlength="50">
+                                    {{#if error }}
+                                        <div class="help-block">{{ error }}</div>
+                                    {{/if}}
+                                </div>
+                            </div>
+                        {{/is}}
+
+                        {{#is fieldName "===" "cons_email" }}
+                            <div class="form-group{{#if error }} has-error{{/if}}">
+                                <label class="col-sm-3 control-label" for="cons-{{ fieldName }}">Email Address:{{#is fieldStatus "===" "REQUIRED" }}<span class="text-danger form-required-marker">*</span>{{/is}}</label>
+                                <div class="col-sm-9">
+                                    <input type="email" class="form-control" id="cons-{{ fieldName }}" name="{{ fieldName }}" value="{{ value }}" maxlength="255">
+                                    {{#if error }}
+                                        <div class="help-block">{{ error }}</div>
+                                    {{/if}}
+                                </div>
+                            </div>
+                        {{/is}}
+
+                        {{#is fieldName "===" "cons_email_opt_in" }}
+                            <div class="form-group{{#if error }} has-error{{/if}}">
+                                <label class="col-sm-3 control-label" for="cons-{{ fieldName }}">&nbsp;{{#is fieldStatus "===" "REQUIRED" }}<span class="text-danger form-required-marker">*</span>{{/is}}</label>
+                                <div class="col-sm-9">
+                                    <label><input type="checkbox" id="cons-{{ fieldName }}" name="{{ fieldName }}" value="true"> {{ label }}</label>
+                                    {{#if error }}
+                                        <div class="help-block">{{ error }}</div>
+                                    {{/if}}
+                                </div>
+                            </div>
+                        {{/is}}
+
+                    {{/each}}
+                {{/is}}
+
+            {{/each}}
+
+
+            <div class="form-group">
+                <div class="col-sm-9 col-sm-push-3">
+                    <button type="submit" class="btn btn-primary btn-submit">{{ submitButtonLabel }}</button>
+                </div>
+            </div>
+        </form>
+    {{/if}}
+</div>
